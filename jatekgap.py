@@ -1,4 +1,5 @@
 import random
+import math
 
 MAX_LINES = 3
 MAX_BET = 1000
@@ -97,15 +98,16 @@ def sorbol_szam():
     
 
 
-def fogadas():
+def fogadas(egyenleg,sorok):
+    max = math.floor(egyenleg/sorok)
     while True:
-        bet = input("Mennyiben fogadsz? ")
+        bet = input(f"Mennyiben fogadsz? (max {max}): ")
         if bet.isdigit():
             bet = int(bet)
-            if MIN_BET <= bet <= MAX_BET:
+            if MIN_BET <= bet <= MAX_BET and bet <= max:
                 break
             else:
-                print(f"írj be számot {MIN_BET} és {MAX_BET} között!")
+                print(f"írj be számot {MIN_BET} és {max} között!")
 
         else:
             print("Adjon meg számot! ")
@@ -118,12 +120,13 @@ def main():
     while True:
         print(f"jelenlegi egyenleged {egyenleg}")
         valasz = input("press enter to spin (q to quit).")
-        if valasz == "q":
+        if valasz == "q" or egyenleg<=0:
+            print(f"Az összes nyereményed: {egyenleg}")
             break
 
         sorok = sorbol_szam()
         while True:
-            bet = fogadas()
+            bet = fogadas(egyenleg,sorok)
             total_bet = bet * sorok
             if total_bet > egyenleg:
                 print("nem jó")
@@ -133,7 +136,10 @@ def main():
         display = gep(RAWS, COLS, szimb_ertekek)
         nyomtat_gep(display)
         nyeremeny, nyero_sor = nyeres(display, sorok, bet, szimb_ertekek )
-        print(f"nyertél {nyeremeny}")
+        if nyeremeny > 0:
+            print(f"nyertél: {nyeremeny-egyenleg}")
+        else:
+            print(f"vesztettél: {nyeremeny-egyenleg}")
         print(f"nyertél a sorban ", *nyero_sor)
         egyenleg += nyeremeny - total_bet
 
