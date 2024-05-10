@@ -1,7 +1,6 @@
 import random
 import math
 
-MAX_LINES = 3
 MAX_BET = 1000
 MIN_BET = 1
 RAWS = 3
@@ -31,7 +30,7 @@ def nyeres(columns, lines, bet, values):
         else:
             nyeremeny += values[symbol] * bet
             nyero_sor.append(f"{line+1}.")
-    return nyeremeny, nyero_sor
+    return nyeremeny-bet, nyero_sor
 
 
 
@@ -54,8 +53,8 @@ def gep(rows, cols, szimbolumok):
 
 
 
-def nyomtat_gep(columns):
-    for row in range(len(columns[0])):
+def nyomtat_gep(columns, sorok):
+    for row in range(sorok):             #range(len(columns[0])):
         for j, column in enumerate(columns):
             if j != len(columns) -1:
                 print(column[row], end =" | ")
@@ -84,13 +83,13 @@ def deposit():
 
 def sorbol_szam():
     while True:
-        lines = input("Hány sorban fogadsz? (1-" + str(MAX_LINES) + ") ")
+        lines = input("Hány sorban fogadsz? (1-" + str(RAWS) + ") ")
         if lines.isdigit():
             lines = int(lines)
-            if 1 <= lines <= MAX_LINES:
+            if 1 <= lines <= RAWS:
                 break
             else:
-                print("írj be számot! (1-" + str(MAX_LINES) + ")")
+                print("írj be számot! (1-" + str(RAWS) + ")")
 
         else:
             print("Adjon meg számot! ")
@@ -99,15 +98,15 @@ def sorbol_szam():
 
 
 def fogadas(egyenleg,sorok):
-    max = math.floor(egyenleg/sorok)
+    max = egyenleg/sorok
     while True:
-        bet = input(f"Mennyiben fogadsz? (max {max}): ")
+        bet = input(f"Mennyiben fogadsz? (max {math.floor(max)}): ")
         if bet.isdigit():
             bet = int(bet)
             if MIN_BET <= bet <= MAX_BET and bet <= max:
                 break
             else:
-                print(f"írj be számot {MIN_BET} és {max} között!")
+                print(f"írj be számot {MIN_BET} és {math.floor(max)} között!")
 
         else:
             print("Adjon meg számot! ")
@@ -134,14 +133,14 @@ def main():
 
 
         display = gep(RAWS, COLS, szimb_ertekek)
-        nyomtat_gep(display)
-        nyeremeny, nyero_sor = nyeres(display, sorok, bet, szimb_ertekek )
+        nyomtat_gep(display, sorok)
+        nyeremeny, nyero_sor = nyeres(display, sorok, total_bet, nyeres_ertek )
         if nyeremeny > 0:
-            print(f"nyertél: {nyeremeny-egyenleg}")
+            print(f"nyertél: {nyeremeny}")
         else:
-            print(f"vesztettél: {nyeremeny-egyenleg}")
+            print(f"vesztettél: -{bet*sorok}")
         print(f"nyertél a sorban ", *nyero_sor)
-        egyenleg += nyeremeny - total_bet
+        egyenleg += nyeremeny
 
 
 main()
